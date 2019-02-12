@@ -1,0 +1,113 @@
+---
+title: "Shiny Application & Reproducible Pitch"
+author: "shahivivdhruv"
+date: "February 12, 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## The Pitch
+
+#### Box office Return and Gross for Top movies.
+ 
+* The Shiny app allows the user to view the name of the most profitable movies.
+The movies can be filtered using interactive slider based on following criteria:
+
+1. Year (From 1920 to 2018)
+2. Budget (From 3M to 430 M)
+3. Number of data points (minimum 3 to maximum 100)
+
+Also, the user can choose to plot the Gross world-wide or the Return against the budget. 
+
+## Example 1: Plotting GrossWW
+
+#### This screenshot shows the result of selecting top 20 movies from 2000 to 2018 in terms of GrossWW.
+
+```{r, echo = FALSE, message=FALSE, warning = FALSE}
+library(dplyr)
+library(plotly)
+
+a<-read.csv("filename.csv", sep="," )
+a<-subset(a, a$GrossWW>100000, rm.na=TRUE)
+a<-mutate(a, "Return"=GrossWW/Budget)
+a$Return<-round(a$Return, digits = 2)
+a$Budget<-as.numeric(a$Budget)
+
+    b<-subset(a, a[,1]>=2000 & a[,1]<=2018, rm.na=TRUE)
+        c<-subset(b, b[,3]>=3000000 & b[,3]<=430000000, rm.na=TRUE)
+        budget1<-3000000
+        budget2<-430000000
+        
+        
+        if(min(c$Budget)>=budget1){
+            budget1<-min(c$Budget)
+            }
+        
+        if(max(c$Budget)<=budget2){
+            budget2<-max(c$Budget)
+            }
+        
+        c<-subset(b, b[,3]>=budget1 & b[,3]<=budget2, rm.na=TRUE)
+        mini<-length(c[,1])
+         
+        if(20<=length(c[,1])){mini<-20}
+        
+        
+            c<-c[order(-c$GrossWW),]
+            d<-subset(c[1:mini,], rm.na=TRUE)
+            plot_ly(d, x = ~Budget, y = ~GrossWW,text= ~paste(Name,"\n","Year:",Year,"\n","Return:", Return), type='scatter',
+                    mode='markers', marker=list(size=10,  opacity=0.7))
+        
+
+```
+
+## Example 2: Plotting  Return 
+
+#### This screenshot shows the result of selecting top 20 movies from 2000 to 2018 in terms of Return.
+
+```{r, echo = FALSE, message=FALSE, warning = FALSE}
+library(dplyr)
+library(plotly)
+
+a<-read.csv("filename.csv", sep="," )
+a<-subset(a, a$GrossWW>100000, rm.na=TRUE)
+a<-mutate(a, "Return"=GrossWW/Budget)
+a$Return<-round(a$Return, digits = 2)
+a$Budget<-as.numeric(a$Budget)
+
+    b<-subset(a, a[,1]>=2000 & a[,1]<=2018, rm.na=TRUE)
+        c<-subset(b, b[,3]>=3000000 & b[,3]<=430000000, rm.na=TRUE)
+        budget1<-3000000
+        budget2<-430000000
+        
+        
+        if(min(c$Budget)>=budget1){
+            budget1<-min(c$Budget)
+            }
+        
+        if(max(c$Budget)<=budget2){
+            budget2<-max(c$Budget)
+            }
+        
+        c<-subset(b, b[,3]>=budget1 & b[,3]<=budget2, rm.na=TRUE)
+        mini<-length(c[,1])
+         
+        if(20<=length(c[,1])){mini<-20}
+        
+        
+              c<-c[order(-c$Return),]
+            d<-subset(c[1:mini,], rm.na=TRUE)
+            plot_ly(d, x = ~Budget, y = ~Return,text= ~paste(Name,"\n","Year:",Year,"\n","Gross:",GrossWW), type='scatter',
+                mode='markers', marker=list(size=10, opacity=0.7))
+```
+
+
+## Acknowledgement
+
+The Data has been obtained from the following site:
+https://www.the-numbers.com/movie/budgets/all
+
+The shiny application can be found here: https://vivekshahi.shinyapps.io/movies/
